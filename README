@@ -1,0 +1,14 @@
+Boom Builder
+=============
+
+Environment Variable
+---------------------
+ - set PYTHONPATY = current direction (e.g. E:\workspace\html\build\)
+ - set JAVA_HOME in path
+
+Subversion
+-----------
+If you want to automaticly update/commit svn working copy , you have to
+intall [pysvn](http://pysvn.tigris.org/docs/pysvn_prog_ref.html#pysvn_client_commit_info_style) 
+
+

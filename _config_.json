@@ -1,0 +1,16 @@
+// =====  config file example  ====
+// rename config.json and copy to your build path
+// all directory path are relative to current path (build path)
+{
+	// path that need parse
+	"cfile_path": "config/",
+
+	//sepement by comma
+	"template":["../../../../../template/profile/header.tpl"],
+
+	"store": "../../../_/",
+	
+	"prefix_path": {
+		"lib": "../../../lib/"
+	}
+}
