@@ -9,15 +9,28 @@ import re
 MAP_PREPARE = '''/*Created automaticly by boomap.py */
 ;(function() {
 	var scripts;
-	var thescript = document.getElementById('MAP_SCRIPT');
+	var thescript;
 	var path;
 	var base;
+	var i = 0;
 	var reg = /^(.*\/)\w+\.js$/;
 
-	if (! (thescript && typeof thescript.async != 'boolean')) {
+	if (document.currentScript) {
+		thescript = document.currentScript;
+
+	} else {
 		scripts = document.getElementsByTagName('script');
-		thescript = scripts[scripts.length-1];
+		for (; i < scripts.length; i++) {
+			if (scripts[i].readyState == 'interactive') {
+				thescript = scripts[i];
+				break;
+			}
+		}
+		if (!thescript) {
+			thescript = scripts[scripts.length - 1];
+		}
 	}
+
     path = thescript.src;
     base = path.match(reg)[1];
     %s.config('base', base);

@@ -467,8 +467,13 @@ class Builder:
 				cf = cfile[key]
 				if cf.index == n:
 					filters.append(key)
-				else:
-					cf.froze = True
+
+		for key in cfile.keys():
+			cf = cfile[key]
+			if key in filters:
+				cf.froze = False
+			else:
+				cf.froze = True
 
 		logging.info('you selected ' + str(filters))
 
