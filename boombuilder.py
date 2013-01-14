@@ -11,10 +11,10 @@ import argparse
 import shutil
 
 
-try:
-	import pysvn
-except ImportError:
-	pysvn = None
+# try:
+# 	import pysvn
+# except ImportError:
+# 	pysvn = None
 
 
 logging.basicConfig(format=('>>' + ' %(message)s'), 
@@ -24,36 +24,65 @@ logging.basicConfig(format=('>>' + ' %(message)s'),
 WARNING_NO_PYSVN = 'you need install pysvn, read README for detail.'
 
 
-def svn_update(path):
-	if not pysvn:
-		logging.warning(WARNING_NO_PYSVN)
+# def svn_update(path):
+# 	if not pysvn:
+# 		logging.warning(WARNING_NO_PYSVN)
+# 		return
+# 	for p in path:
+# 		logging.info('svn update: ' + p)
+# 	pysvn.Client().update(path, recurse=True)
+
+
+# def svn_commit(path):
+# 	if not pysvn:
+# 		logging.warning(WARNING_NO_PYSVN)
+# 		return				
+# 	client = pysvn.Client()
+# 	for p in path:
+# 		logging.info('svn commit: ' + p)
+# 		if not client.info(p):
+# 			client.add(p)
+# 	client.checkin(path, 'by builder', recurse=True)
+
+
+# def svn_remove(path):
+# 	if not pysvn:
+# 		logging.warning(WARNING_NO_PYSVN)
+# 		return
+# 	for p in path:
+# 		logging.info('svn delete : ' + p)
+# 	client = pysvn.Client()
+# 	client.remove(path)
+# 	client.checkin(path, 'by builder')
+
+def svn_command(command, args):
+	exe = normally_path('D:/Program Files/SlikSvn/bin/svn.exe')
+	lines = [exe, command]
+	lines += args
+	proc = subprocess.Popen(lines, stdout=subprocess.PIPE)
+	stdoutdata, unused_stderrdata = proc.communicate()
+	if proc.returncode != 0:
 		return
-	for p in path:
-		logging.info('svn update: ' + p)
-	pysvn.Client().update(path, recurse=True)
+
+	return stdoutdata
+
+
+def svn_update(path):
+	svn_command('update', path)
 
 
 def svn_commit(path):
-	if not pysvn:
-		logging.warning(WARNING_NO_PYSVN)
-		return				
-	client = pysvn.Client()
 	for p in path:
-		logging.info('svn commit: ' + p)
-		if not client.info(p):
-			client.add(p)
-	client.checkin(path, 'by builder', recurse=True)
+		status = svn_command('status', [p])
+		if status and status[0] == '?':
+			logging.info('add it')
+			svn_command('add', [p])
+
+	svn_command('commit', ['-m', 'by boombuilder.py'] + path)
 
 
 def svn_remove(path):
-	if not pysvn:
-		logging.warning(WARNING_NO_PYSVN)
-		return
-	for p in path:
-		logging.info('svn delete : ' + p)
-	client = pysvn.Client()
-	client.remove(path)
-	client.checkin(path, 'by builder')
+	svn_command('delete', path)
 
 
 def compile_js(js, to, flag=[]):
@@ -635,6 +664,7 @@ class Builder:
 
 		if not lineargs['d']:
 			self.del_temp_dir()
+
 
 '''
 NOTE: 
