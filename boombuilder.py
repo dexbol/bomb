@@ -23,6 +23,8 @@ logging.basicConfig(format=('>>' + ' %(message)s'),
 
 WARNING_NO_PYSVN = 'you need install pysvn, read README for detail.'
 
+SCRIPT_PATH = 'E:/6rooms/'
+
 
 # def svn_update(path):
 # 	if not pysvn:
@@ -75,14 +77,14 @@ def svn_commit(path):
 	for p in path:
 		status = svn_command('status', [p])
 		if status and status[0] == '?':
-			logging.info('add it')
 			svn_command('add', [p])
 
 	svn_command('commit', ['-m', 'by boombuilder.py'] + path)
 
 
 def svn_remove(path):
-	svn_command('delete', path)
+	svn_command('delete', 
+		['-m', 'deleted by boombuilder.py'] + path)
 
 
 def compile_js(js, to, flag=[]):
