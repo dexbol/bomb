@@ -11,60 +11,23 @@ import argparse
 import shutil
 
 
-# try:
-# 	import pysvn
-# except ImportError:
-# 	pysvn = None
-
+SCRIPT_PATH = os.path.dirname(__file__)
+JAR_PATH = SCRIPT_PATH
 
 logging.basicConfig(format=('>>' + ' %(message)s'), 
 					level=logging.DEBUG)
 
 
-WARNING_NO_PYSVN = 'you need install pysvn, read README for detail.'
-
-SCRIPT_PATH = 'E:/6rooms/'
-
-
-# def svn_update(path):
-# 	if not pysvn:
-# 		logging.warning(WARNING_NO_PYSVN)
-# 		return
-# 	for p in path:
-# 		logging.info('svn update: ' + p)
-# 	pysvn.Client().update(path, recurse=True)
-
-
-# def svn_commit(path):
-# 	if not pysvn:
-# 		logging.warning(WARNING_NO_PYSVN)
-# 		return				
-# 	client = pysvn.Client()
-# 	for p in path:
-# 		logging.info('svn commit: ' + p)
-# 		if not client.info(p):
-# 			client.add(p)
-# 	client.checkin(path, 'by builder', recurse=True)
-
-
-# def svn_remove(path):
-# 	if not pysvn:
-# 		logging.warning(WARNING_NO_PYSVN)
-# 		return
-# 	for p in path:
-# 		logging.info('svn delete : ' + p)
-# 	client = pysvn.Client()
-# 	client.remove(path)
-# 	client.checkin(path, 'by builder')
 
 def svn_command(command, args):
-	exe = normally_path('D:/Program Files/SlikSvn/bin/svn.exe')
+	exe = normally_path(r'D:\Program Files\CollabNet\Subversion Client\svn.exe')
 	lines = [exe, command]
 	lines += args
-	proc = subprocess.Popen(lines, stdout=subprocess.PIPE)
-	stdoutdata, unused_stderrdata = proc.communicate()
+
+	proc = subprocess.Popen(lines, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	stdoutdata, stderrdata = proc.communicate()
 	if proc.returncode != 0:
-		return
+		logging.warning(stderrdata)
 
 	return stdoutdata
 
@@ -83,16 +46,12 @@ def svn_commit(path):
 
 
 def svn_remove(path):
-	svn_command('delete', 
-		['-m', 'deleted by boombuilder.py'] + path)
+	svn_command('delete', path)
+	svn_commit(path)
 
 
 def compile_js(js, to, flag=[]):
-	if __name__ == '__main__':
-		jarpath = sys.path[0]
-	else:
-		jarpath = sys.path[1]
-	jarpath = normally_path(jarpath + '/closure-compiler.jar')
+	jarpath = normally_path(JAR_PATH + '/closure-compiler.jar')
 	args = ['java', '-jar', jarpath]
 	args += ['--js', js]
 	args += ['--js_output_file', to]
@@ -104,11 +63,7 @@ def compile_js(js, to, flag=[]):
 
 
 def compile_css(css, to, flag=[]):
-	if __name__ == '__main__':
-		jarpath = sys.path[0]
-	else:
-		jarpath = sys.path[1]
-	jarpath = normally_path(jarpath + '/yuicompressor.jar')
+	jarpath = normally_path(JAR_PATH + '/yuicompressor.jar')
 	args = ['java', '-jar', jarpath, css]
 	args += ['--type', 'css']
 	args += ['--line-break', '86']
@@ -150,7 +105,7 @@ def filename(file):
 		return (filename)
 
 
-class CFile:
+class CFile(object):
 	'''config file object'''
 
 	rdead = re.compile(r'^\s*/\*\s*dead\s*\*/\s*$')
@@ -387,7 +342,7 @@ class CFile:
 		handler.close()
 
 
-class Config:
+class Config(object):
 	def __init__(self):
 		pass
 
@@ -421,7 +376,7 @@ class Config:
 			self._config[key] = value	
 
 
-class Builder:
+class Builder(object):
 	def __init__(self, buildpath=False, args=None):
 		self.buildpath = buildpath or ''
 		self.args = args

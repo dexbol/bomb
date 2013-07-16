@@ -36,9 +36,6 @@ MAP_PREPARE = '''/*Created automaticly by boomap.py */
     %s.config('base', base);
 })(); '''
 
-MAP_BASE_URI = '''
-%s.config('base', '%s')
-'''
 
 DEFAULT_REQUIRES = "'jquery'"
 
@@ -159,15 +156,12 @@ def main():
 	parser.add_argument('-d', '--dest', dest='dest', action='store', help='dest file name')
 	parser.add_argument('-b', '--boom', dest='boom', action='store', help='global object name, \
 		defalut is CN6')
-	parser.add_argument('--base', dest='base', action='store', help='boomjs base url')
 
 	args = vars(parser.parse_args())
 	dest = args['dest'] or 'map.js'
 	path = args['path']
 	boom = args['boom'] or BOOM
-	base = ''
-	if args['base']:
-		base = MAP_BASE_URI % (boom, args['base'])
+
 	if not path:
 		logging.info('argument required, -h see detail')
 		return
@@ -186,7 +180,6 @@ def main():
 	handler = open(dest_path, 'w')
 	prepare = MAP_PREPARE % BOOM
 	handler.write(prepare)
-	handler.write(base)
 	for m in maps:
 		handler.write('\n' + str(m))
 	handler.close()
