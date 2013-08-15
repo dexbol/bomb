@@ -3,7 +3,7 @@
 // all directory path are relative to current path (build path)
 {
 	// path that need parse
-	"cfile_path": "config/",
+	"cfile": ["config/"],
 
 	//sepement by comma
 	"template":["../../../../../template/profile/header.tpl"],
