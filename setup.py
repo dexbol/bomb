@@ -60,7 +60,7 @@ class my_install_scripts(install_scripts):
 
 
 try:
-	with open(root_dir + os.sep + 'README') as handler:
+	with open(root_dir + os.sep + 'README.md') as handler:
 		long_description = handler.read()
 except:
 	long_description = ''
