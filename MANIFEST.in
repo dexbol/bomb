@@ -1,0 +1,8 @@
+include ./README
+include ./setup.py
+include ./bomb_py
+include ./bomb/*
+include ./bomb/jar/*
+prune ./test
+
+

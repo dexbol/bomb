@@ -17,7 +17,7 @@ class Batch():
 		config = Config()
 		config.load(config_path)
 
-		base_url = os.path.dirname(config_path) or '.' + os.sep
+		base_url = (os.path.dirname(config_path) or '.') + os.sep
 		url_map = config.get('prefix_path')
 		referrer = config.get('referrer') or []
 		store = config.get('store')

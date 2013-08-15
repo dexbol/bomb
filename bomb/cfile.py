@@ -42,8 +42,6 @@ class CFile(object):
 			if os.path.dirname(path) != '' else '')
 		self.url_map = url_map
 
-		assert len(filename(path)) == 3
-
 		self.filename, self.basename, self.extension = filename(path)
 
 		self.dead = False
