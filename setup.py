@@ -48,7 +48,7 @@ class my_install_scripts(install_scripts):
         if sys.platform == 'win32':
             try:
                 script_dir = os.path.join(sys.prefix, 'Scripts')
-                script_path = os.path.join(script_dir, 'bomb_py')
+                script_path = os.path.join(script_dir, 'bomb')
                 bat_str = '@"%s" "%s" %%*' % (sys.executable, script_path)
                 bat_path = os.path.join(self.install_dir, 'bomb.bat')
                 with open(bat_path, 'w') as handler:
@@ -76,6 +76,6 @@ setup(
 	packages=['bomb'],
 	package_dir={'': root_dir_unix},
 	package_data={'bomb': ['jar/*.jar']},
-	scripts=[root_dir_unix + '/bomb_py'],
+	scripts=[root_dir_unix + '/bin/bomb'],
 	cmdclass={'install_scripts':my_install_scripts}
 	)
