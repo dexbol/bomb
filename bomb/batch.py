@@ -3,6 +3,7 @@
 import logging
 import os
 import shutil
+import time
 from .cfilegroup import CFileGroup
 from .config import Config
 from .utils import normalize_path
@@ -13,30 +14,56 @@ logger = logging.getLogger('bomb')
 
 class Batch():
 
-	def __init__(self, config_path):
-		config = Config()
-		config.load(config_path)
+	def __init__(self, config_path=None, **kwargs):
 
-		base_url = (os.path.dirname(config_path) or '.') + os.sep
-		url_map = config.get('prefix_path')
-		referrer = config.get('referrer') or []
-		store = config.get('store')
-		tempath = normalize_path(base_url + 'bomb-temp/')
+		default_params = {
+			"cfile": [],
+			"referrer": [],
+			"store": '',
+			"prefix_path": None,
+			"debug": False
+		}
 
-		if not referrer or not store or not config.get('cfile'):
-			raise Exception('config file error')
+		base_url = ''
+		params = dict()
+
+		if config_path:
+			config = Config()
+			config.load(config_path)
+			base_url = (os.path.dirname(config_path) or '.') + os.sep
+			params = config
+		else:
+			params = kwargs
+
+		for key, value in default_params.iteritems():
+			params.setdefault(key, value)
+
+		if not len(params['cfile']):
+			raise Exception('Config Error: cfile requires.')
+		if not len(params['referrer']):
+			raise Exception('Config Error: referrer requires.')
+		if not params['store']:
+			raise Exception('Config Error: store requires')
+
+
+		referrer = params['referrer']
+		store = params['store']
+		tempath = normalize_path(base_url + 'bomb-' + str(int(time.time())) + '/')
 
 		group = CFileGroup()
-		for path in config.get('cfile'):
+		for path in params['cfile']:
 			group.add_by_path(normalize_path(base_url + path), 
-				url_base=base_url, url_map=url_map)
+				url_base=base_url, url_map=params['prefix_path'])
 
 		self.group = group
-		self.config = config
+		self.debug = params['debug']
 		self.base_url = base_url
 		self.referrer = [self._path(refer) for refer in referrer]
 		self.store = self._path(store)
 		self.tempath = tempath
+
+	def _verify_param(self, param):
+		pass
 
 	def _path(self, path):
 		return normalize_path(self.base_url + path)
@@ -106,6 +133,11 @@ class Batch():
 		self._svn_commit([item.path for item in self.group.list()])
 
 	def remove_stale(self):
+		try:
+			WindowsError
+		except NameError:
+			WindowsError = None
+
 		recycel = []
 		try:
 			for item in self.group.list():
@@ -115,6 +147,8 @@ class Batch():
 		except IOError:
 			pass
 		except WindowsError:
+			pass
+		except OSError:
 			pass
 		finally:
 			self._svn_remove(recycel)
@@ -144,7 +178,7 @@ class Batch():
 			self.commit()
 			self.remove_stale()
 
-			if not self.config.get('debug'):
+			if not self.debug:
 				shutil.rmtree(tempath)
 
 		finally:

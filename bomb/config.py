@@ -6,9 +6,12 @@ import logging
 
 logger = logging.getLogger('bomb')
 
-class Config(object):
-	def __init__(self):
-		pass
+try:
+	WindowsError
+except NameError:
+	WindowsError = None
+
+class Config(dict):
 
 	def load(self, path):
 		try:
@@ -22,22 +25,16 @@ class Config(object):
 			logger.warning('config file is not exsit:' + path)
 
 		config = json.loads(''.join(result))
-		try:
-			self._config.update(config)
-		except AttributeError:
-			self._config = config
-
+		self.update(config)
 		logger.debug('Load config file : ' + path)
 
 	def get(self, key):
-		try:
-			return self._config[key]
-		except KeyError:
-			return None
+		return self[key]
 
 	def set(self, key, value):
-		try:
-			self._config[key] = value
-		except AttributeError:
-			self._config = {}
-			self._config[key] = value
+		self[key] = value	
+
+
+
+
+
