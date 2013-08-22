@@ -18,4 +18,5 @@ def application(envrion, start_response):
 
 if __name__ == '__main__':
 	httpd = make_server('', 8866, application)
+	print 'Serving on port 8866 ...'
 	httpd.serve_forever()
