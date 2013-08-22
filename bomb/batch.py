@@ -40,8 +40,6 @@ class Batch():
 
 		if not len(params['cfile']):
 			raise Exception('Config Error: cfile requires.')
-		if not len(params['referrer']):
-			raise Exception('Config Error: referrer requires.')
 		if not params['store']:
 			raise Exception('Config Error: store requires')
 
