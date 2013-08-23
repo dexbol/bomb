@@ -1,4 +1,4 @@
-include ./README
+include ./README.md
 include ./setup.py
 include ./bomb_py
 include ./bomb/*
