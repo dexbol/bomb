@@ -145,6 +145,8 @@ class CFile(object):
 					for file_generator in self.import_file(path):
 						for l in file_generator:
 							yield l
+				elif re.search(self.rdepend, line):
+					continue
 				else:
 					yield line
 

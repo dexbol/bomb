@@ -182,6 +182,7 @@ class TestCFile(unittest.TestCase):
 		self.assertTrue(content.find(snippet_2) > -1)
 		self.assertTrue(content.find(snippet_3) > -1)
 		self.assertTrue(content.find(snippet_4) > -1)
+		self.assertTrue(content.find('depend(') == -1)
 
 	def test_update_map(self):
 		snippet_1 = 'cfile_100.js'
