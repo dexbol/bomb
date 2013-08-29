@@ -9,6 +9,7 @@ from cmd import Cmd
 
 import mapscan
 from .utils import normalize_path, filename
+from .cfile import CFile
 from .cfilegroup import CFileGroup
 from .compiler import *
 from .config import Config

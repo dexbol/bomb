@@ -31,8 +31,6 @@ class CFile(object):
 
 	rdepend = re.compile(r'^\s*\$?depend\((.+)\)')
 
-	rdirectory = re.compile(r'[/\\]$')
-
 	rfile = re.compile(r'\.js$|\.css$')
 
 	def __init__(self, path, url_base=None, url_map=dict()):
@@ -144,8 +142,9 @@ class CFile(object):
 					path = importmatch.group(1) or importmatch.group(2)
 					path = re.sub('["\']', '', path)
 					path = self.parse_import_path(path)
-					for l in self.import_file(path):
-						yield l
+					for file_generator in self.import_file(path):
+						for l in file_generator:
+							yield l
 				else:
 					yield line
 
@@ -165,14 +164,19 @@ class CFile(object):
 			raise Exception('prefix not found ! (' + prefix + ')')		
 
 	def import_file(self, path):
-		if re.search(self.rdirectory, path):
-			for (directory, subdirs, filenames) in os.walk(path):
-				for fname in filenames:
-					self.import_file(os.sep.join([directory, fname]))
-		else:
+		def _import(path):
 			with open(path) as lines:
 				for line in lines:
 					yield line
+
+		if os.path.isdir(path):
+			for (dirpath, dirnames, filenames) in os.walk(path):
+				if '.svn' in dirnames:
+					dirnames.remove('.svn')
+				for fname in filenames:
+					yield _import(os.path.join(dirpath, fname))
+		else:
+			yield _import(path)
 
 	def update_map(self):
 		reg = re.compile(r'^\s*([A-Z]\w*)\.add\((.*?)\s*,\s*function')

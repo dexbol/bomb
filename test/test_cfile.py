@@ -4,6 +4,7 @@ import env
 import logging
 import re
 import os
+import shutil
 import unittest
 from bomb.cfile import CFile
 from bomb.utils import normalize_path
@@ -16,6 +17,7 @@ CFILE_CONTENT = '''
 depend('jquery.js')
 $import('module_1.js')
 $import('root!module_2.js)
+$import('../lib/');
 '''
 
 MODULE_1_CONTENT = '''
@@ -35,6 +37,18 @@ MODULE_2_CONTENT = '''
 		});
 '''
 
+MODULE_3_CONTENT = '''
+CN6.add('dexter', function() {
+
+	})
+'''
+
+MODULE_4_CONTENT = '''
+CN6.add('priscilla', function() {
+
+	});
+'''
+
 REFERRER_CONTENT = '''
 <title>中文</title>
 <script src="//domain/path/static/cfile_0.js"></script>
@@ -44,17 +58,46 @@ REFERRER_CONTENT = '''
 class TestCFile(unittest.TestCase):
 
 	def setUp(self):
-		with open(test_path + 'module_1.js', 'w') as handler:
-			handler.write(MODULE_1_CONTENT)
+		try:
+			os.mkdir(root_path + 'lib')
+		except:
+			pass
 
-		with open(root_path + 'module_2.js', 'w') as handler:
-			handler.write(MODULE_2_CONTENT)
+		try:
+			with open(test_path + 'module_1.js', 'w') as handler:
+				handler.write(MODULE_1_CONTENT)
+		except:
+			pass
 
-		with open(test_path + 'cfile.js', 'w') as handler:
-			handler.write(CFILE_CONTENT)
+		try:
+			with open(root_path + 'module_2.js', 'w') as handler:
+				handler.write(MODULE_2_CONTENT)
+		except:
+			pass
 
-		with open(test_path + 'referrer.txt', 'w') as handler:
-			handler.write(REFERRER_CONTENT)
+		try:
+			with open(root_path + 'lib/module_3.js', 'w') as handler:
+				handler.write(MODULE_3_CONTENT)
+		except:
+			pass
+
+		try:
+			with open(root_path + 'lib/module_4.js', 'w') as handler:
+				handler.write(MODULE_4_CONTENT)
+		except:
+			pass
+
+		try:
+			with open(test_path + 'cfile.js', 'w') as handler:
+				handler.write(CFILE_CONTENT)
+		except:
+			pass
+
+		try:
+			with open(test_path + 'referrer.txt', 'w') as handler:
+				handler.write(REFERRER_CONTENT)
+		except:
+			pass
 
 		self.cfile = CFile(test_path + 'cfile.js', url_map={
 			'root': normalize_path('../')
@@ -63,10 +106,31 @@ class TestCFile(unittest.TestCase):
 	def tearDown(self):
 		try:
 			os.remove(test_path + 'module_1.js')
+		except:
+			pass
+
+		try:
 			os.remove(root_path + 'module_2.js')
+		except:
+			pass
+
+		try:
 			os.remove(test_path + 'cfile.js')
+		except:
+			pass
+
+		try:
 			os.remove(test_path + 'referrer.txt')
+		except:
+			pass
+
+		try:
 			os.remove(test_path + self.cfile.get_version_name())
+		except:
+			pass
+
+		try:
+			shutil.rmtree(root_path + 'lib')
 		except:
 			pass
 
@@ -107,6 +171,8 @@ class TestCFile(unittest.TestCase):
 	def test_parse_content(self):
 		snippet_1 = 'CN6.add(\'alic'
 		snippet_2 = 'ack\', func'
+		snippet_3 = 'dexter'
+		snippet_4 = 'priscilla'
 		content = ''
 
 		for line in self.cfile.parse_content():
@@ -114,6 +180,8 @@ class TestCFile(unittest.TestCase):
 
 		self.assertTrue(content.find(snippet_1) > -1)
 		self.assertTrue(content.find(snippet_2) > -1)
+		self.assertTrue(content.find(snippet_3) > -1)
+		self.assertTrue(content.find(snippet_4) > -1)
 
 	def test_update_map(self):
 		snippet_1 = 'cfile_100.js'
