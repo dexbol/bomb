@@ -31,10 +31,16 @@ windows, this can supply convenience to execute python script like bomb.
 Install
 --------
 
+### Install from source code ###
+
 Download source code from here(on your right hand "Downloaded Zip" button).
 Unpackage, open command-line cmd.exe or bash, naviage the directory and run:
 
 	python setup.py install
+
+### Use pip ###
+
+	[sudo] pip install bomb
 
 
 Usage
