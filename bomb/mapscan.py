@@ -51,7 +51,7 @@ raddModule = re.compile('''^\s*([A-Z0-9]+)\.add\(
 	''', re.VERBOSE)
 
 rrequireModuleStart = re.compile('''requires\s*\:\s*\[([^\]]+)(\])?''', re.VERBOSE)
-rrequireModuleEnd = re.compile('''^\s*([^\]]+)\]\}\)\;?$''', re.VERBOSE)
+rrequireModuleEnd = re.compile('''^\s*([^\]]+)\]\}\)\s*\;?\s*$''', re.VERBOSE)
 
 
 def _isJsFile(ref):
@@ -120,14 +120,16 @@ def _scanFileContent(file, basepath):
 			if matchObj:
 				notFountModule = False
 				cream += '@' + matchObj.group(2)
+				continue
 
 			matchObj = re.search(rrequireModuleStart, line)
 			if matchObj:
 				cream += '%' + matchObj.group(1)
 				if matchObj.group(2) != ']':
-					mutiLineRequires = True	
+					mutiLineRequires = True
+				continue
 
-			elif mutiLineRequires:
+			if mutiLineRequires:
 				matchObj = re.search(rrequireModuleEnd, line)
 				if matchObj:
 					cream += matchObj.group(1)

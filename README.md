@@ -36,7 +36,7 @@ Install
 Download source code from here(on your right hand "Downloaded Zip" button).
 Unpackage, open command-line cmd.exe or bash, naviage the directory and run:
 
-	python setup.py install
+	[sudo] python setup.py install
 
 ### Use pip ###
 
