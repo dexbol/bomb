@@ -176,7 +176,8 @@ class CFile(object):
 				if '.svn' in dirnames:
 					dirnames.remove('.svn')
 				for fname in filenames:
-					yield _import(os.path.join(dirpath, fname))
+					if fname.endswith('.js') or fname.endswith('.css'):
+						yield _import(os.path.join(dirpath, fname))
 		else:
 			yield _import(path)
 
