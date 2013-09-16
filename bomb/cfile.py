@@ -118,7 +118,7 @@ class CFile(object):
 		self.version = self.version + 1
 
 	def get_version_name(self, version=None):
-		version = '_' + str(version or self.version) + '.'
+		version = '_' + str(version if version !=None else self.version) + '.'
 		return self.basename + version + self.extension
 
 	def get_stale_name(self, stale_age=None):
@@ -167,6 +167,7 @@ class CFile(object):
 
 	def import_file(self, path):
 		def _import(path):
+			yield '\n'
 			with open(path) as lines:
 				for line in lines:
 					yield line
@@ -222,9 +223,9 @@ class CFile(object):
 		self.update_map()
 
 		for line in self.parse_content():
-			content.append(line)
+			content.append(line.encode('utf-8'))
 		for line in extension:
-			content.append(line)
+			content.append(line.encode('utf-8'))
 
 		return content
 
@@ -240,14 +241,13 @@ class CFile(object):
 	def update_referrer(self, referrer, pattern=None, repl=None):
 		pattern = pattern or self.get_version_name_re()
 		repl = repl or self.get_version_name()
-		repl = repl.encode('utf-8')
 		referrer = normalize_path(referrer)
 
 		with open(referrer) as handler:
-			content = handler.read()
+			content = handler.read().decode('utf-8')
 
 		content = re.sub(pattern, repl, content)
 
 		with open(referrer, 'w') as handler:
-			handler.write(content)
+			handler.write(content.encode('utf-8'))
 

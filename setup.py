@@ -67,7 +67,7 @@ except:
 
 setup(
 	name='bomb',
-	version='0.1.7',
+	version='0.1.9',
 	description='Web frond-end publish tools',
 	long_description=long_description,
 	author='dexbol',
