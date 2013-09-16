@@ -96,9 +96,6 @@ class Publish(Cmd):
 				batch.publish()
 				self._print('Publish Complete!!')
 				return True
-				
-			except ValueError:
-				pass
 
 			except AttributeError:
 				self._print('*** You Can\'t Use This Command.')

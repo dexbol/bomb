@@ -170,7 +170,7 @@ class CFile(object):
 			yield '\n'
 			with open(path) as lines:
 				for line in lines:
-					yield line
+					yield line.decode('utf-8')
 
 		if os.path.isdir(path):
 			for (dirpath, dirnames, filenames) in os.walk(path):
