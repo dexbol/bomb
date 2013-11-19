@@ -19,7 +19,7 @@ Source: "library.zip"; DestDir: "{app}"
 Source: "python27.dll"; DestDir: "{app}"
 Source: "select.pyd"; DestDir: "{app}"
 Source: "unicodedata.pyd"; DestDir: "{app}"
-Source: "svn\*"; DestDir: "{app}\svn\"; Check: checksvn; AfterInstall: addsvnenv('{app}\svn\');
+Source: "..\thirdparty\svn\*"; DestDir: "{app}\svn\"; Check: checksvn; AfterInstall: addsvnenv('{app}\svn\');
 
 [Registry]
 Root: HKCR; Subkey: "*\Shell\Bomb"; ValueType:expandsz; ValueData: "Bomb"; Flags: uninsdeletekey
