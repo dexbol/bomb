@@ -5,6 +5,10 @@ import sys
 import subprocess
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
+try:
+    import py2exe
+except:
+    py2exe = None
 
 
 root_dir = os.path.dirname(__file__)
@@ -65,9 +69,10 @@ try:
 except:
 	long_description = ''
 
+
 setup(
 	name='bomb',
-	version='0.1.10',
+	version='0.1.11',
 	description='Web frond-end publish tools',
 	long_description=long_description,
 	author='dexbol',
@@ -77,5 +82,6 @@ setup(
 	package_dir={'': root_dir_unix},
 	package_data={'bomb': ['jar/*.jar']},
 	scripts=[root_dir_unix + '/bin/bomb'],
-	cmdclass={'install_scripts':my_install_scripts}
+	cmdclass={'install_scripts':my_install_scripts},
+    console=['bin/bomb']
 	)

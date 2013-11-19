@@ -8,7 +8,9 @@ import re
 
 logger = logging.getLogger('bomb')
 
-MAP_PREPARE = '''/* Created automaticly by bomb. Please do not edit.*/
+MAP_PREPARE = '''/* Created automaticly by bomb. 
+*** Please do not edit. ***  
+*/
 ;(function() {
 	var scripts;
 	var thescript;
@@ -97,7 +99,7 @@ class _ModuleInfo(object):
 	def __str__(self):
 		if self.modulerequire:
 			self.modulerequire = ', requires: [%s]' % self.modulerequire
-		return '''%s.add('%s', {path: '%s'%s})''' % (BOOM, self.modulename,
+		return '''%s.add('%s', {path: '%s'%s});''' % (BOOM, self.modulename,
 			 self.path, self.modulerequire)
 
 

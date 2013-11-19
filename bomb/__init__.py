@@ -17,7 +17,6 @@ from .svn import *
 from .batch import Batch
 from .init import init_config
 
-
 class LoggerFormatter(logging.Formatter):
 
 	def format(self, record):
@@ -94,8 +93,7 @@ class Publish(Cmd):
 					batch.filter(selected)
 
 				batch.publish()
-				self._print('Publish Complete!!')
-				return True
+				self._print('Publish Complete!! Press Enter To Exit.')
 
 			except AttributeError:
 				self._print('*** You Can\'t Use This Command.')
@@ -140,7 +138,7 @@ class Publish(Cmd):
 				self._print(command + ' - ' + doc)
 
 	def emptyline(self):
-		pass
+		return True
 
 	def precmd(self, line):
 		if line:
@@ -167,6 +165,7 @@ def run():
 
 	publisher = Publish(args['config_path'])
 	publisher.cmdloop()
+
 
 
 
