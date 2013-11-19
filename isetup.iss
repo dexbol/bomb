@@ -4,7 +4,6 @@
 [Setup]
 AppName = Bomb
 AppVersion = 0.1.11
-SourceDir = .\dist\
 DefaultDirName = {pf}\Bomb
 ArchitecturesInstallIn64BitMode = x64
 ArchitecturesAllowed = x64
@@ -12,14 +11,15 @@ SetupLogging = yes
 ChangesEnvironment = yes
 
 [Files]
-Source: "_hashlib.pyd"; DestDir: "{app}"
-Source: "bomb.exe"; DestDir: "{app}"
-Source: "bz2.pyd"; DestDir: "{app}"
-Source: "library.zip"; DestDir: "{app}"
-Source: "python27.dll"; DestDir: "{app}"
-Source: "select.pyd"; DestDir: "{app}"
-Source: "unicodedata.pyd"; DestDir: "{app}"
-Source: "..\thirdparty\svn\*"; DestDir: "{app}\svn\"; Check: checksvn; AfterInstall: addsvnenv('{app}\svn\');
+Source: "dist\*"; DestDir: "{app}"
+Source: "dist\bomb\*"; DestDir: "{app}\bomb";
+Source: "dist\bomb\jar\*"; DestDir: "{app}\bomb\jar";
+Source: "dist\distutils\*"; DestDir: "{app}\distutils";
+Source: "dist\encodings\*"; DestDir: "{app}\encodings";
+Source: "dist\json\*"; DestDir: "{app}\json";
+Source: "dist\logging\*"; DestDir: "{app}\logging";
+Source: "dist\unittest\*"; DestDir: "{app}\unittest";
+Source: "thirdparty\svn\*"; DestDir: "{app}\svn\"; Check: checksvn; AfterInstall: addsvnenv('{app}\svn\');
 
 [Registry]
 Root: HKCR; Subkey: "*\Shell\Bomb"; ValueType:expandsz; ValueData: "Bomb"; Flags: uninsdeletekey

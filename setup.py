@@ -81,7 +81,14 @@ setup(
 	packages=['bomb'],
 	package_dir={'': root_dir_unix},
 	package_data={'bomb': ['jar/*.jar']},
+    data_files=[('bomb/jar', ['bomb/jar/closure-compiler.jar', 'bomb/jar/yuicompressor.jar'])],
+    include_package_data=True,
 	scripts=[root_dir_unix + '/bin/bomb'],
 	cmdclass={'install_scripts':my_install_scripts},
-    console=['bin/bomb']
-	)
+    console=['bin/bomb'],
+    options={
+        "py2exe": {
+            "skip_archive": True
+        }
+    }
+)
