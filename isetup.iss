@@ -3,7 +3,7 @@
 
 [Setup]
 AppName = Bomb
-AppVersion = 0.1.16
+AppVersion = 0.1.17
 DefaultDirName = {pf}\Bomb
 ArchitecturesInstallIn64BitMode = x64
 ArchitecturesAllowed = x64

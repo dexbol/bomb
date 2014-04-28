@@ -66,19 +66,19 @@ Quickstart
 
 		{
 			"cfile": ["./cfile/"],
-			"referrer":["../template/head.html"],
+			"referrer":["../template/head.tpl"],
 			"store": "./store"
 		}
 
 	Let's explain these key. `cfile` is a array that include config file
 	directory(explain "config file" later). The value `./cfile/` means all config
 	files in `C:\project\static\cfile\`. `referrer` is a template file such as
-	php template or a html file that introduce "config file". `store` is a
+	php template or a html file that introduce javascript or css. `store` is a
 	directory that contain files that compile config files to. The last, one case
 	need to take care is that all path we mention above is relative to the directory
 	of `package.json`, in this case it's `C:\project\static`.
 
-	Now, the directories tree like this:
+	Now, the directories tree looks like this:
 
 		template/
 		static/
@@ -110,7 +110,7 @@ Quickstart
 		$import('./js/jquery.js');
 		$import('./js/jquery.js');
 
-	So, the directories tree like this:
+	So, the directories tree looks like this:
 
 		template/
 		static/
@@ -157,7 +157,7 @@ Quickstart
 			{/if}
 		</head>
 	
-	Now, the directories tree likes this:
+	Now, the directories tree looks like this:
 
 		template/
 			head.tpl
@@ -186,9 +186,9 @@ cmd.exe or bash and type
 	bomb package.json
 
 You will see a list of config file even use what way you chose. Then type `all`
-and `Enter`. Bomb will run and process course of actions e.g. compile config file
+and `Enter`. Bomb will run and process course of actions e.g. compile config file,
 modify template file and commit the change to server by SVN. All Done, The
-directoies tree likes this:
+directoies tree looks like this:
 
 		template/
 			head.tpl
@@ -220,11 +220,9 @@ And if this project use SVN, all change commited to server already. That's all.
 More Feature
 ------------
 
-If you use Google Pagespeed, you should know insert samll css into html file can
-be 
-Bomb do this easily. Use the example above, But we need change `head.tpl`
-to this:
-
+If you use Google Pagespeed, you should know inlineing small CSS files can
+enhance speed of page rendering. Bomb do this easily. Use the example above,
+But we need change `head.tpl` to this:
 
 	<!doctype html>
 	<html lang="en">
@@ -247,4 +245,4 @@ to this:
 		{/if}
 	</head>
 
-Run Bomb, the content of one.css will appear between the annotation.
+Run Bomb, the content of one.css will appear between the annotations.
