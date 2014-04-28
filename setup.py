@@ -11,9 +11,6 @@ except:
     py2exe = None
 
 
-root_dir = os.path.dirname(__file__)
-root_dir_unix = '/'.join(root_dir.split(os.sep)) or '.'
-
 
 def check_command(command):
 	try:
@@ -72,18 +69,16 @@ except:
 
 setup(
 	name='bomb',
-	version='0.1.11',
+	version='0.1.16',
 	description='Web frond-end publish tools',
 	long_description=long_description,
 	author='dexbol',
 	author_email='dexbolg@gmail.com',
 	url='',
 	packages=['bomb'],
-	package_dir={'': root_dir_unix},
 	package_data={'bomb': ['jar/*.jar']},
-    data_files=[('bomb/jar', ['bomb/jar/closure-compiler.jar', 'bomb/jar/yuicompressor.jar'])],
     include_package_data=True,
-	scripts=[root_dir_unix + '/bin/bomb'],
+	scripts=['bin/bomb'],
 	cmdclass={'install_scripts':my_install_scripts},
     console=['bin/bomb'],
     options={

@@ -81,7 +81,9 @@ class Publish(Cmd):
 		return True
 
 	def do_publish(self, selected):
-		'''Publish selected cfiles. e.g. publish 2,12,4'''
+		'''Publish selected cfiles. e.g. publish 2,12,4 .
+		you can specify a version name like this: 2-12,3-3. That's means the cfile index
+		is 2, it's version could be 12 '''
 
 		if selected:
 			try:
@@ -89,13 +91,39 @@ class Publish(Cmd):
 
 				if selected != 'all':
 					explode = selected.strip().split(',')
-					selected = [int(idx.strip()) for idx in explode]
-					batch.filter(selected)
+					selected = [idx.strip() for idx in explode]
+					index = []
+					specifyVersion = []
+
+					for sel in selected:
+						explode = sel.split('-')
+						index.append(int(explode[0]))
+						try:
+							version = explode[1]
+							specifyVersion.append((
+								int(explode[0]),
+								# batch.publish will update all cfiles be 
+								# publish (version += 1) so minus 1 here
+								int(version) - 1
+								))
+						except IndexError:
+							pass
+
+					batch.filter(index)
+
+					group = batch.group
+					for index, version in specifyVersion:
+						try:
+							group.index(index).version = version
+							
+						except AttributeError:
+							pass
 
 				batch.publish()
 				self._print('Publish Complete!! Press Enter To Exit.')
 
-			except AttributeError:
+			except AttributeError as e:
+				self._print(e)
 				self._print('*** You Can\'t Use This Command.')
 		else:
 			self._print('*** Arguments Error')
@@ -143,8 +171,7 @@ class Publish(Cmd):
 	def precmd(self, line):
 		if line:
 			pattern = re.compile(r'''^\s*all\s*$|
-				^\s*\d+\s*$|
-				^(\s*\d+\s*,\s*)+\s*\d+\s*$''', re.VERBOSE)
+				^(\s*\d+(-\d+)?\s*,?\s*)+$''', re.VERBOSE)
 			if re.search(pattern, line):
 				return 'publish ' + line.strip()
 		return line		

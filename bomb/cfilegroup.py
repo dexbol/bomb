@@ -52,6 +52,12 @@ class CFileGroup(object):
 				return item
 		return None
 
+	def index(self, index):
+		for item in self._list:
+			if item.index == index:
+				return item;
+		return None
+
 	def list(self, whole=False):
 		for item in self._list:
 			if not item.frozen or whole:
@@ -84,9 +90,9 @@ class CFileGroup(object):
 		for item in self.list():
 			item.update_version()
 
-	def update_referrer(self, referrer, pattern=None, repl=None):
+	def update_referrer(self, referrer):
 		for item in self.list():
-			item.update_referrer(referrer, pattern=pattern, repl=repl)
+			item.update_referrer(referrer)
 
 	def collect_map(self):
 		return [item.map for item in self.list(True)]

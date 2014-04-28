@@ -8,7 +8,7 @@ from .cfilegroup import CFileGroup
 from .config import Config
 from .utils import normalize_path
 from .svn import *
-from .compiler import compile_cfile
+from .compiler import compile_csjs
 
 logger = logging.getLogger('bomb')
 
@@ -167,7 +167,7 @@ class Batch():
 			for path in group.push_list(tempath):
 				filename = os.path.basename(path)
 				logger.info('compile: ' + store + filename)
-				compile_cfile(path, store + filename)
+				compile_csjs(path, store + filename)
 
 			for refer in referrer:
 				group.update_referrer(refer)

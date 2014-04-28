@@ -3,8 +3,10 @@
 import re
 import logging
 import os
+import tempfile
 from config import Config
 from utils import normalize_path, filename
+from compiler import compile_csjs
 
 logger = logging.getLogger('bomb')
 
@@ -21,6 +23,8 @@ class CFile(object):
 
 	rbootstrap = re.compile(r'^\s*/\*\s*@?bootstrap\s*\*/\s*$', re.VERBOSE)
 
+	rplaceholder = re.compile(r'^\s*/\*\s*@?placeholder\s*\*/\s*$')
+
 	rversion = re.compile(r'''^\s*/\*\s*
 								@?version\s*=\s*(\d+)
 								\s*\*/\s*$''', re.VERBOSE)
@@ -30,6 +34,7 @@ class CFile(object):
 		''', re.VERBOSE)
 
 	rdepend = re.compile(r'^\s*\$?depend\((.+)\)')
+
 
 	rfile = re.compile(r'\.js$|\.css$')
 
@@ -45,6 +50,7 @@ class CFile(object):
 		self.dead = False
 		self.frozen = False
 		self.bootstrap = False
+		self.placeholder = False
 		self.stale_age = self.STALE_AGE
 
 		self._map = ''
@@ -62,6 +68,10 @@ class CFile(object):
 				matchobj = re.search(self.rbootstrap, line)
 				if matchobj:
 					self.bootstrap = True
+
+				matchobj = re.search(self.rplaceholder, line)
+				if matchobj:
+					self.placeholder = True
 
 				matchobj = re.search(self.rmap, line)
 				if matchobj:
@@ -126,10 +136,15 @@ class CFile(object):
 			(stale_age or self.stale_age))
 
 	def get_version_name_re(self):
-		return re.compile(self.basename + '_' + r'(\d+)' + r'\.' + self.extension)		
+		return re.compile(self.basename + '_' + r'(\d+)' + r'\.' + \
+			self.extension)
 
-	def extend_content(self, extra=[]):
-		self._extension_content += extra
+	def get_placeholder_re(self):
+		name = self.basename + '\\.' + self.extension
+		return re.compile(r'''(\/\*\s*_PLACEHOLDER_%s\s+START\s*\*\/)
+			([\s\S]*?)
+			(\/\*\s*_PLACEHOLDER_%s\s+END\s*\*\/)
+			''' % (name, name), re.VERBOSE)
 
 	def parse_content(self):
 		if self.dead:
@@ -183,7 +198,9 @@ class CFile(object):
 			yield _import(path)
 
 	def update_map(self):
-		reg = re.compile(r'^\s*([A-Z]\w*)\.add\((.*?)\s*,\s*function')
+		reg = re.compile(r'''^\s*([A-Z]\w*)
+			(?:\.add|\[['"]add['"]\])
+			\((.*?)\s*,\s*function''', re.VERBOSE)
 		rinternal = re.compile(r'^[\'"]?!')
 		mods = []
 		boom = None
@@ -191,19 +208,19 @@ class CFile(object):
 		dependstr = ''
 
 		for line in self.parse_content():
-			matchobj = re.match(reg, line);
+			matchobj = re.match(reg, line)
 			if matchobj:
-				mods.append(matchobj.group(2));
-				boom = matchobj.group(1);
+				mods.append(matchobj.group(2))
+				boom = matchobj.group(1)
 		if not boom:
 			return
 
 		# strip module name begined with !
 		mods = [m for m in mods if not re.match(rinternal, m)];
 		if len(mods) > 0:
-			modstr = ',\'mods\':[' + ','.join(mods) + ']';
+			modstr = ',\'mods\':[' + ','.join(mods) + ']'
 		else:
-			modstr = '';
+			modstr = ''
 
 		if len(file_depend) > 0 :
 			dependstr = ",'requires':[" + ",".join(file_depend) + "]"
@@ -238,16 +255,29 @@ class CFile(object):
 
 		return path
 
-	def update_referrer(self, referrer, pattern=None, repl=None):
-		pattern = pattern or self.get_version_name_re()
-		repl = repl or self.get_version_name()
+	def update_referrer(self, referrer):
+		pattern = self.get_placeholder_re() if self.placeholder else \
+			self.get_version_name_re()
 		referrer = normalize_path(referrer)
 
 		with open(referrer) as handler:
 			content = handler.read().decode('utf-8')
 
-		content = re.sub(pattern, repl, content)
+		if self.placeholder:
+			spawn = ''.join(self.dump())
+			handle, abspath = tempfile.mkstemp('.' + self.extension, text=True)
+
+			with open(abspath, 'w') as handler:
+				handler.write(spawn)
+
+			spawn = compile_csjs(abspath)
+			content = re.sub(pattern, '\g<1>' + spawn + '\g<3>', content)
+			os.close(handle)
+			os.remove(abspath)
+		else:
+			content = re.sub(pattern, self.get_version_name(), content)
 
 		with open(referrer, 'w') as handler:
-			handler.write(content.encode('utf-8'))
+			handler.write(content.encode('utf-8'))	
+
 
