@@ -108,7 +108,8 @@ Quickstart
 	`one.js` looks like this:
 
 		$import('./js/jquery.js');
-		$import('./js/jquery.js');
+		$import('./js/a.js');
+		$import('./js/b.js');
 
 	So, the directories tree looks like this:
 
