@@ -184,13 +184,13 @@ class Publish(Cmd):
 			self.stdout.write('%s\n' % msg)
 
 
-def run():
+def run(config_path=None):
 	parser = argparse.ArgumentParser()
 	parser.add_argument('config_path', nargs='?')
-	args = vars(parser.parse_args())
+	args = parser.parse_args()
 	logger.setLevel(logging.INFO)
 
-	publisher = Publish(args['config_path'])
+	publisher = Publish(config_path or args.config_path)
 	publisher.cmdloop()
 
 

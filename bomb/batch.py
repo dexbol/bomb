@@ -98,7 +98,8 @@ class Batch():
 
 	def list(self):
 		return ['[' + str(item.index) + ']' + item.filename +
-			('(bootstrap)' if item.bootstrap else '')
+			('(bootstrap)' if item.bootstrap else '') +
+			('(placeholder)' if item.placeholder else '') 
 			for item in self.group.list(True)]
 
 	def filter(self, select=[]):

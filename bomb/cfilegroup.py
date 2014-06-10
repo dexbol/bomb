@@ -77,7 +77,7 @@ class CFileGroup(object):
 		path = []
 
 		for item in self.list():
-			if not item.bootstrap:
+			if not item.bootstrap and not item.placeholder:
 				path.append(self.push(item.filename, destination))
 
 		for item in self.list():

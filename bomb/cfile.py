@@ -264,6 +264,7 @@ class CFile(object):
 			content = handler.read().decode('utf-8')
 
 		if self.placeholder:
+			logger.info('replace placeholder: ' + self.filename)
 			spawn = ''.join(self.dump())
 			handle, abspath = tempfile.mkstemp('.' + self.extension, text=True)
 
