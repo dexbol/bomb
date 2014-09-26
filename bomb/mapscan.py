@@ -68,8 +68,7 @@ def _normalizeFileName(path):
 	'''normalize file name . trim version number, dash and "-min" suffix
 	 e.g. jquery-1.7.0-min.js to jquery'''
 
-	fragment = re.split(r'[/\\]', path)
-	filename = fragment[-1]
+	filename = os.path.split(path)[1]
 	pattern = re.compile('[^\d]+')
 	matchObj = re.match(pattern, filename)
 	if matchObj:
