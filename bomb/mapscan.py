@@ -52,12 +52,14 @@ raddModule = re.compile('''^\s*([A-Z0-9]+)\.add\(
 	\s*,\s*function
 	''', re.VERBOSE)
 
-rrequireModuleStart = re.compile('''requires\s*\:\s*\[([^\]]+)(\])?''', re.VERBOSE)
-rrequireModuleEnd = re.compile('''^\s*([^\]]+)\]\}\)\s*\;?\s*$''', re.VERBOSE)
+rrequireModuleStart = re.compile('''requires\s*\:\s*\[([^\]]+)(\])?''', 
+								re.VERBOSE)
+rrequireModuleEnd = re.compile('''^\s*([^\]]+)\]\}\)\s*\;?\s*$''', 
+								re.VERBOSE)
 
 
 def _isJsFile(ref):
-	return ref.endswith('.js')
+	return ref.endswith('.js') or ref.endswith('.jsx')
 
 
 def _normalizeUrl(path):
@@ -69,14 +71,9 @@ def _normalizeFileName(path):
 	 e.g. jquery-1.7.0-min.js to jquery'''
 
 	filename = os.path.split(path)[1]
-	pattern = re.compile('[^\d]+')
-	matchObj = re.match(pattern, filename)
-	if matchObj:
-		filename = matchObj.group(0)
-		if filename.endswith('.js'):
-			filename = filename[0:-3]
-		if filename.endswith('-'):
-			filename = filename[0:-1]
+	pattern = re.compile(r'[-_\.](?:\d+|min|js|css|jsx)')
+	filename = re.split(pattern, filename)[0]
+
 	return filename
 
 
@@ -142,7 +139,7 @@ def _scanFileContent(file, basepath):
 	if notFountModule:
 		cream = '@' + _normalizeFileName(file)
 		# guess is it a jquery plugin
-		if cream != '@jquery' and 'jquery' in cream:
+		if cream != '@jquery' and 'jquery-' in cream:
 			cream += '%' + '\'jquery\''
 	modulepath = os.path.relpath(file, basepath)
 	modulepath = _normalizeUrl(modulepath)
