@@ -14,15 +14,15 @@ logger = logging.getLogger('bomb')
 
 CONFIG_CONTENT = '''{
 
-	"cfile": [""],
+    "cfile": [""],
 
-	"referrer":["../referrer.txt"],
+    "referrer":["../referrer.txt"],
 
-	"store": "../store/",
-	
-	"prefix_path": {
-		"lib": "../../../lib/"
-	}
+    "store": "../store/",
+    
+    "prefix_path": {
+        "lib": "../../../lib/"
+    }
 }
 '''
 
@@ -52,48 +52,48 @@ REFERRER_CONTENT = '''
 
 class TestBatch(unittest.TestCase):
 
-	def setUp(self):
-		workspace = test_path + 'workspace'
-		build = normalize_path(workspace + '/build/')
-		store = normalize_path(workspace + '/store/')
-		os.mkdir(workspace)
-		os.mkdir(build)
-		os.mkdir(store)
+    def setUp(self):
+        workspace = test_path + 'workspace'
+        build = normalize_path(workspace + '/build/')
+        store = normalize_path(workspace + '/store/')
+        os.mkdir(workspace)
+        os.mkdir(build)
+        os.mkdir(store)
 
-		for filename, file_content in [('c1.js', C1_JS), ('c2.js', C2_JS),
-			('c3.js', C3_JS), ('c4.css', C4_CSS), 
-			('config.json', CONFIG_CONTENT)]:
+        for filename, file_content in [('c1.js', C1_JS), ('c2.js', C2_JS),
+            ('c3.js', C3_JS), ('c4.css', C4_CSS), 
+            ('config.json', CONFIG_CONTENT)]:
 
-			path = normalize_path(build + filename)
-			with open(path, 'w') as handler:
-				handler.write(file_content)
+            path = normalize_path(build + filename)
+            with open(path, 'w') as handler:
+                handler.write(file_content)
 
-		with open(workspace + os.sep + 'referrer.txt', 'w') as handler:
-			handler.write(REFERRER_CONTENT)
+        with open(workspace + os.sep + 'referrer.txt', 'w') as handler:
+            handler.write(REFERRER_CONTENT)
 
-	def tearDown(self):
-		shutil.rmtree(test_path + 'workspace')
+    def tearDown(self):
+        shutil.rmtree(test_path + 'workspace')
 
 
-	def test_batch(self):
-		batch = Batch(normalize_path(test_path + 'workspace/build/config.json'))
-		batch.list()
-		batch.filter([3])
-		batch.filter([1])
-		batch.publish()
+    def test_batch(self):
+        batch = Batch(normalize_path(test_path + 'workspace/build/config.json'))
+        batch.list()
+        batch.filter([3])
+        batch.filter([1])
+        batch.publish()
 
-		logger.debug('====================================================')
-		group = [item.index for item in batch.group.list(True)]
-		for i in range(10):
-			selected = random.sample(group, 2)
-			print selected
-			batch.filter(selected)
-			batch.publish()
-			logger.debug('====================================================')
+        logger.debug('====================================================')
+        group = [item.index for item in batch.group.list(True)]
+        for i in range(10):
+            selected = random.sample(group, 2)
+            print selected
+            batch.filter(selected)
+            batch.publish()
+            logger.debug('====================================================')
 
 
 
 
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()

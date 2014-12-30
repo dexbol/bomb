@@ -4,13 +4,16 @@ import re
 import logging
 import os
 import tempfile
-from config import Config
 from utils import normalize_path, filename
 from compiler import compile_csjs
 try:
     from react import jsx
 except:
     jsx = None
+try:
+    from scss.compiler import Compiler as SCSSCompiler
+except:
+    SCSSCompiler = None
 
 logger = logging.getLogger('bomb')
 
@@ -42,12 +45,13 @@ class CFile(object):
 
     rfile = re.compile(r'\.js$|\.css$')
 
-    def __init__(self, path, url_base=None, url_map=dict()):
+    def __init__(self, path, url_base=None, url_map=dict(), scss_root=None):
         self.path = path
         self.url_base = url_base if url_base != None\
             else (os.path.dirname(path) + os.sep\
             if os.path.dirname(path) != '' else '')
         self.url_map = url_map
+        self.scss_root = scss_root
 
         self.filename, self.basename, self.extension = filename(path)
 
@@ -167,7 +171,7 @@ class CFile(object):
                             yield l
                 elif re.search(self.rdepend, line):
                     continue
-        	    else:
+                else:
                     yield line
 
     def parse_import_path(self, path):
@@ -185,13 +189,24 @@ class CFile(object):
         else:
             path = url_base + path
 
-        if os.path.isfile(path) and jsx:
-            with open(path) as handler:
-                content = handler.read()
-            if self._match_jsx_notation(content):
-                temp = tempfile.mkstemp(os.path.splitext(path)[1])
+        if os.path.isfile(path):
+            fileext = os.path.splitext(path)[1]
+            if fileext == '.js' and jsx:
+                with open(path) as handler:
+                    content = handler.read().decode('utf-8')
+                if self._match_jsx_notation(content):
+                    temp = tempfile.mkstemp(fileext)
+                    self._tempfile.append(temp)
+                    jsx.transform(path, temp[1])
+                    path = temp[1]
+            if fileext == '.scss' and SCSSCompiler:
+                compiler = SCSSCompiler(search_path=(self.scss_root,))
+                temp = tempfile.mkstemp('.css')
                 self._tempfile.append(temp)
-                jsx.transform(path, temp[1])
+                with open(path) as handler:
+                    content = handler.read().decode('utf-8')
+                content = compiler.compile_string(content)
+                os.write(temp[0], content.encode('utf-8'))
                 path = temp[1]
 
         return path
@@ -270,7 +285,7 @@ class CFile(object):
         path = normalize_path(destination, self.get_version_name())
 
         with open(path, 'w') as handler:
-        	handler.write(''.join(content))
+            handler.write(''.join(content))
 
         return path
 
@@ -285,10 +300,10 @@ class CFile(object):
         if self.placeholder:
             logger.info('replace placeholder: ' + self.filename)
             spawn = ''.join(self.dump())
-            handle, abspath = tempfile.mkstemp('.' + self.extension, text=True)
+            temp = tempfile.mkstemp('.' + self.extension, text=True)
+            handle, abspath = temp
 
-            with open(abspath, 'w') as handler:
-                handler.write(spawn)
+            os.write(handle, spawn)
 
             spawn = compile_csjs(abspath)
             content = re.sub(pattern, '\g<1>' + spawn + '\g<3>', content)
@@ -302,12 +317,16 @@ class CFile(object):
 
     def _collect_garbage(self):
         for temp in self._tempfile:
-            os.close(temp[0])
-            os.remove(temp[1])
+            try:
+                os.close(temp[0])
+                os.remove(temp[1])
+            except:
+                continue
 
     def _match_jsx_notation(self, content):
-        pattern = re.compile(r'\/\*\*\s*\@jsx\s*.*?\s*\*\/')
-        return re.search(pattern, content)
+        pattern = re.compile(r'\@jsx')
+        result = re.search(pattern, content)
+        return result
 
 
 

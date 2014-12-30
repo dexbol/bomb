@@ -22,7 +22,7 @@ class my_install_scripts(install_scripts):
                 bat_str = '@"%s" "%s" %%*' % (sys.executable, script_path)
                 bat_path = os.path.join(self.install_dir, 'bomb.bat')
                 with open(bat_path, 'w') as handler:
-                	handler.write(bat_str)
+                    handler.write(bat_str)
                 print ('Created: %s' % bat_path)
             except:
                 print ('ERROR: Unable to create %s: %s' % (bat_path, err))
@@ -30,25 +30,25 @@ class my_install_scripts(install_scripts):
 
 
 try:
-	with open(root_dir + os.sep + 'README.md') as handler:
-		long_description = handler.read()
+    with open(root_dir + os.sep + 'README.md') as handler:
+        long_description = handler.read()
 except:
-	long_description = ''
+    long_description = ''
 
 
 setup(
-	name='bomb',
-	version='0.1.18',
-	description='Web frond-end publish tools',
-	long_description=long_description,
-	author='dexbol',
-	author_email='dexbolg@gmail.com',
-	url='',
-	packages=['bomb'],
-	package_data={'bomb': ['jar/*.jar']},
+    name='bomb',
+    version='0.1.18',
+    description='Web frond-end publish tools',
+    long_description=long_description,
+    author='dexbol',
+    author_email='dexbolg@gmail.com',
+    url='',
+    packages=['bomb'],
+    package_data={'bomb': ['jar/*.jar']},
     include_package_data=True,
-	scripts=['bin/bomb'],
-	cmdclass={'install_scripts':my_install_scripts},
+    scripts=['bin/bomb'],
+    cmdclass={'install_scripts':my_install_scripts},
     console=['bin/bomb'],
     options={
         "py2exe": {

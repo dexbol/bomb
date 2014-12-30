@@ -1,18 +1,18 @@
 {
 
-	// cfile path or directory, empty string means the directory that 
-	// config.json in.
-	"cfile": [""],
+    // cfile path or directory, empty string means the directory that 
+    // config.json in.
+    "cfile": [""],
 
-	// path that refer to compiled cfile , normmaly it is a html or tpl file
-	"referrer": [""],
+    // path that refer to compiled cfile , normmaly it is a html or tpl file
+    "referrer": [""],
 
-	// path that contain compiled cfile
-	"store": "",
+    // path that contain compiled cfile
+    "store": "",
 
-	// the key value is prefix path consistently, this supply a convenient way
-	// to import other file in cfile. e.g. a prefix path pair like this
-	// {'lib': '/srv/www/html/csjs/lib'}, than in cfile you can use
-	// `$import("lib!jquery.js")` to import /srv/www/html/csjs/lib/jquery.js 
-	"prefix_path": {}
+    // the key value is prefix path consistently, this supply a convenient way
+    // to import other file in cfile. e.g. a prefix path pair like this
+    // {'lib': '/srv/www/html/csjs/lib'}, than in cfile you can use
+    // `$import("lib!jquery.js")` to import /srv/www/html/csjs/lib/jquery.js 
+    "prefix_path": {}
 }
