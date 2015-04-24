@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 import time
+import ftplib
 from .cfilegroup import CFileGroup
 from .config import Config
 from .utils import normalize_path
@@ -22,7 +23,12 @@ class Batch():
             "store": '',
             "prefix_path": None,
             "scss_root": None,
-            "debug": False
+            "debug": False,
+            "ftp_ip": "",
+            "ftp_port": "",
+            "ftp_username": "",
+            "ftp_password": "",
+            "ftp_root": ""
         }
 
         base_url = ''
@@ -41,13 +47,12 @@ class Batch():
 
         if not len(params['cfile']):
             raise Exception('Config Error: cfile requires.')
-        if not params['store']:
-            raise Exception('Config Error: store requires')
-
 
         referrer = params['referrer']
         store = params['store']
         tempath = normalize_path(base_url + 'bomb-' + \
+                    str(int(time.time())) + '/')
+        tempstorepath = normalize_path(base_url + 'bomb-stor-' + \
                     str(int(time.time())) + '/')
         scss_root = normalize_path(base_url + params['scss_root']) if \
                     params['scss_root'] else None
@@ -63,8 +68,10 @@ class Batch():
         self.debug = params['debug']
         self.base_url = base_url
         self.referrer = [self._path(refer) for refer in referrer]
-        self.store = self._path(store)
+        self.store = self._path(store) if store else tempstorepath
         self.tempath = tempath
+        self.tempstorepath = tempstorepath
+        self.config = params
 
     def _verify_param(self, param):
         pass
@@ -121,7 +128,7 @@ class Batch():
         try:
             svn_command('info', [os.path.dirname(path[0])])
             return True
-        except SVNError:
+        except (SVNError, IndexError):
             return False
 
     def list(self):
@@ -149,7 +156,6 @@ class Batch():
     def unlock_workspace(self):
         self._svn_unlock(self.referrer)
         self._svn_unlock([item.path for item in self.group.list()])
-
 
     def commit(self):
         preflighter = [self.store + item.get_version_name()\
@@ -180,17 +186,36 @@ class Batch():
         finally:
             self._svn_remove(recycel)
 
+    def ftp(self):
+        files = [self.store + item.get_version_name()\
+            for item in self.group.list()]
+        config = self.config;
+        client = ftplib.FTP()
+        client.connect(config['ftp_ip'].encode('utf-8'), 
+                        config['ftp_port'].encode('utf-8'))
+        client.login(config['ftp_username'].encode('utf-8'), 
+                        config['ftp_password'].encode('utf-8'))
+        client.cwd(config['ftp_root'].encode('utf-8'))
+        for item in self.group.list():
+            with open(self.store + item.get_version_name()) as handler:
+                client.storbinary('STOR ' + item.get_version_name(), handler)
+
     def publish(self):
-        self.update_workspace()
-        self.lock_workspace()
+        useftp = bool(self.config['ftp_ip'])
+
+        if not useftp:
+            self.update_workspace()
+            self.lock_workspace()
 
         group = self.group
         tempath = self.tempath
+        tempstorepath = self.tempstorepath
         store = self.store
         referrer = self.referrer
 
         try:
             os.mkdir(tempath)
+            os.mkdir(tempstorepath)
             group.update_version()
 
             for path in group.push_list(tempath):
@@ -201,12 +226,17 @@ class Batch():
             for refer in referrer:
                 group.update_referrer(refer)
 
-            self.unlock_workspace()
-            self.commit()
-            self.remove_stale()
+            if not useftp:
+                self.unlock_workspace()
+                self.commit()
+                self.remove_stale()
+            else:
+                self.ftp()
 
             if not self.debug:
                 shutil.rmtree(tempath)
+                shutil.rmtree(tempstorepath)
 
         finally:
-            self.unlock_workspace()
+            if not useftp:
+                self.unlock_workspace()

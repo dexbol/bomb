@@ -21,7 +21,21 @@ CONFIG_TEMPLATE = '''{
     // to import other file in cfile. e.g. a prefix path pair like this
     // {'lib': '/srv/www/html/csjs/lib'}, than in cfile you can use
     // `$import("lib!jquery.js")` to import /srv/www/html/csjs/lib/jquery.js 
-    "prefix_path": {}
+    "prefix_path": {},
+
+    "debug": false,
+
+    "scss_root": "",
+
+    "ftp_ip": "",
+
+    "ftp_port": "",
+
+    "ftp_username": "",
+
+    "ftp_password": "",
+
+    "ftp_root": ""
 }
 '''
 

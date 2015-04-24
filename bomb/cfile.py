@@ -4,6 +4,8 @@ import re
 import logging
 import os
 import tempfile
+import time
+import random
 from utils import normalize_path, filename
 from compiler import compile_csjs
 try:
@@ -28,6 +30,8 @@ class CFile(object):
                             @?map\s*=\s*(.+?)
                             \s*\*/ ''', re.VERBOSE)
 
+    rnomap = re.compile(r'^\s*/\*\s*@?nomap\s*\*/\s*$')
+
     rbootstrap = re.compile(r'^\s*/\*\s*@?bootstrap\s*\*/\s*$', re.VERBOSE)
 
     rplaceholder = re.compile(r'^\s*/\*\s*@?placeholder\s*\*/\s*$')
@@ -35,6 +39,7 @@ class CFile(object):
     rversion = re.compile(r'''^\s*/\*\s*
                                 @?version\s*=\s*(\d+)
                                 \s*\*/\s*$''', re.VERBOSE)
+    rnoversion = re.compile(r'^\s*/\*\s*@?noversion\s*\*/\s*$')
 
     rimport = re.compile(r'''^\s*\$?import\((.+)\)|
         ^\s*@import\s+url\((.+)\)
@@ -60,9 +65,13 @@ class CFile(object):
         self.bootstrap = False
         self.placeholder = False
         self.stale_age = self.STALE_AGE
+        self.noversion = False
+        self.nomap = False
 
         self._map = ''
         self._version = -1
+        self._uglyversion = self._base36encode(int(time.time() * 1000)) + \
+                            str(random.randrange(0, 9999))
         self._file_depend = []
         self._tempfile = []
 
@@ -86,9 +95,17 @@ class CFile(object):
                 if matchobj:
                     self._map = matchobj.group(1)
 
+                matchobj = re.search(self.rnomap, line)
+                if matchobj:
+                    self.nomap = True
+
                 matchobj = re.search(self.rversion, line)
                 if matchobj:
                     self._version = int(matchobj.group(1))
+
+                matchobj = re.search(self.rnoversion, line)
+                if matchobj:
+                    self.noversion = True
 
                 matchobj = re.search(self.rdepend, line)
                 if matchobj:
@@ -100,41 +117,44 @@ class CFile(object):
 
     @property
     def version(self):
-        return self._version
+        return self._uglyversion if self.noversion else self._version
 
     @version.setter
     def version(self, version):
-        content = []
-        with open(self.path) as lines:
-            for line in lines:
-                matchobj = re.search(self.rversion, line)
-                if not matchobj:
-                    content.append(line)
-        self._version = version
-        content.insert(0, '/* @version=' + str(self._version) + ' */\n')
-        with open(self.path, 'w') as handler:
-            handler.write(''.join(content))
+        if not self.noversion:
+            content = []
+            with open(self.path) as lines:
+                for line in lines:
+                    matchobj = re.search(self.rversion, line)
+                    if not matchobj:
+                        content.append(line)
+            self._version = version
+            content.insert(0, '/* @version=' + str(self._version) + ' */\n')
+            with open(self.path, 'w') as handler:
+                handler.write(''.join(content))
 
     @property
     def map(self):
-        return self._map
+        return '' if self.nomap else self._map
 
     @map.setter
     def map(self, newmap):
-        new = []
-        with open(self.path) as lines:
-            for line in lines:
-                matchobj = re.search(self.rmap, line)
-                if not matchobj:
-                    new.append(line)            
+        if not self.nomap:
+            new = []
+            with open(self.path) as lines:
+                for line in lines:
+                    matchobj = re.search(self.rmap, line)
+                    if not matchobj:
+                        new.append(line)            
 
-        new.insert(0, '/* @map = ' + newmap + ' */\n')
-        with open(self.path, 'w') as handler:
-            handler.write(''.join(new))
-        self._map = newmap
+            new.insert(0, '/* @map = ' + newmap + ' */\n')
+            with open(self.path, 'w') as handler:
+                handler.write(''.join(new))
+            self._map = newmap
 
     def update_version(self):
-        self.version = self.version + 1
+        if not self.noversion:
+            self.version = self.version + 1
 
     def get_version_name(self, version=None):
         version = '_' + str(version if version !=None else self.version) + '.'
@@ -145,7 +165,7 @@ class CFile(object):
             (stale_age or self.stale_age))
 
     def get_version_name_re(self):
-        return re.compile(self.basename + '_' + r'(\d+)' + r'\.' + \
+        return re.compile(self.basename + '_' + r'([\dA-Z]+)' + r'\.' + \
             self.extension)
 
     def get_placeholder_re(self):
@@ -327,6 +347,27 @@ class CFile(object):
         pattern = re.compile(r'\@jsx')
         result = re.search(pattern, content)
         return result
+
+    def _base36encode(self, number, 
+                            alphabet='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
+        if not isinstance(number, (int, long)):
+            raise TypeError('number must be an integer')
+
+        base36 = ''
+        sign = ''
+
+        if number < 0:
+            sign = '-'
+            number = -number
+
+        if 0 <= number < len(alphabet):
+            return sign + alphabet[number]
+
+        while number != 0:
+            number, i = divmod(number, len(alphabet))
+            base36 = alphabet[i] + base36
+
+        return sign + base36
 
 
 
