@@ -83,8 +83,6 @@ class TestCFileGroup(unittest.TestCase):
         self.assertTrue('c2map' in group.dump('c1.js') and
             'c3map' in group.dump('c1.js'))
 
-    
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -35,12 +35,12 @@ class TestCompiler(unittest.TestCase):
 
     def test_compile_js_without_output_file(self):
         result = compiler.compile_js(env.test_path + 'aa.js')
-        self.assertTrue('compile' in result)
+        self.assertTrue('compile'.encode('utf-8') in result)
 
     def test_compile_css_without_output_file(self):
         result = compiler.compile_css(env.test_path + 'aa.css', 
             flag = ['--verbose'])
-        self.assertTrue('yellow' in result)
+        self.assertTrue('yellow'.encode('utf-8') in result)
 
 if __name__ == '__main__':
     unittest.main()

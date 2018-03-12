@@ -1,5 +1,4 @@
 # coding = utf-8
-
 import os
 import argparse
 import logging
@@ -70,7 +69,7 @@ def _normalizeFileName(path):
     '''normalize file name . trim version number, dash and "-min" suffix
      e.g. jquery-1.7.0-min.js to jquery'''
 
-    filename = os.path.split(path)[1]
+    filename = os.path.basename(path)
     pattern = re.compile(r'[-_\.](?:\d+|min|js|css|jsx)')
     filename = re.split(pattern, filename)[0]
 

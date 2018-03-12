@@ -2,6 +2,7 @@
 
 import env
 from bomb import utils
+from os import path
 import unittest
 
 class TestUtils(unittest.TestCase):
@@ -14,11 +15,11 @@ class TestUtils(unittest.TestCase):
 
     def test_normalize_path(self):
         self.assertEqual(utils.normalize_path('foo/bar/../test/'), 
-            'foo\\test\\')
+            'foo/test/')
         self.assertEqual(utils.normalize_path('C:\\windows\\User\\Desktop\\'), 
-            'c:\\windows\\user\\desktop\\')
+            'C:\\windows\\User\\Desktop\\')
         self.assertEqual(utils.normalize_path('../test/foo.js'), 
-            '..\\test\\foo.js')
+            '../test/foo.js')
         self.assertEqual(utils.normalize_path('bar.js'), 'bar.js')
 
     def test_filename(self):

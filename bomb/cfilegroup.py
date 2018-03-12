@@ -104,9 +104,3 @@ class CFileGroup(object):
     def collect_stale(self, direct):
         return [normalize_path(direct + item.get_stale_name()) for
             item in self.list()]
-
-
-
-
-
-

@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 import cgi
 import argparse
 from wsgiref.simple_server import make_server
@@ -23,5 +21,5 @@ if __name__ == '__main__':
     args = parser.parse_args();
     host = vars(args)['host'] or ''
     httpd = make_server('', 8866, application)
-    print 'Serving on port 8866 ...'
+    print('Serving on port 8866 ...')
     httpd.serve_forever()

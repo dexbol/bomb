@@ -45,7 +45,7 @@ class TestMap(unittest.TestCase):
             pass
 
     def test_scan_module(self):
-        result = bombmap._scanFileContent(env.test_path + 'one.js',
+        result = bombmap._buildMapFromFile(env.test_path + 'one.js',
             env.root_path)
         self.assertTrue(len(result) == 2)
 
@@ -60,7 +60,7 @@ class TestMap(unittest.TestCase):
         self.assertEqual(first.modulerequire, "'1', '2'")
         self.assertEqual(second.modulerequire, "'1', '2', \n'3','4'")
 
-        result = bombmap._scanFileContent(env.test_path + 'mustache-1.2-min.js',
+        result = bombmap._buildMapFromFile(env.test_path + 'mustache-1.2-min.js',
             env.root_path)
         result = result[0]
 

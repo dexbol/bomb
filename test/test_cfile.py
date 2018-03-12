@@ -285,7 +285,8 @@ class TestCFile(unittest.TestCase):
 
         self.assertTrue('2' in content)
         self.assertTrue('});\n' in content)
-        self.assertTrue("    CN6.add('jack', function(C) {\n" in content);
+        self.assertTrue(
+            "    CN6.add('jack', function(C) {\n" in content);
 
     def test_push(self):
         self.cfile.push(test_path)
@@ -319,4 +320,3 @@ class TestCFile(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

@@ -63,7 +63,6 @@ class TestBatch(unittest.TestCase):
         for filename, file_content in [('c1.js', C1_JS), ('c2.js', C2_JS),
             ('c3.js', C3_JS), ('c4.css', C4_CSS), 
             ('config.json', CONFIG_CONTENT)]:
-
             path = normalize_path(build + filename)
             with open(path, 'w') as handler:
                 handler.write(file_content)
@@ -86,13 +85,10 @@ class TestBatch(unittest.TestCase):
         group = [item.index for item in batch.group.list(True)]
         for i in range(10):
             selected = random.sample(group, 2)
-            print selected
+            print(selected)
             batch.filter(selected)
             batch.publish()
             logger.debug('====================================================')
-
-
-
 
 
 if __name__ == '__main__':

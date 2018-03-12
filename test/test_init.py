@@ -11,7 +11,6 @@ class TestInitConfig(unittest.TestCase):
         init_config(test_path)
 
     def tearDown(self):
-        return
         os.remove(test_path + 'config.json')
 
     def test_init(self):

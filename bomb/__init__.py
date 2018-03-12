@@ -7,7 +7,7 @@ import argparse
 import re
 from cmd import Cmd
 
-import mapscan
+from . import mapscan
 from .utils import normalize_path, filename
 from .cfile import CFile
 from .cfilegroup import CFileGroup
@@ -162,7 +162,7 @@ class Publish(Cmd):
             self._print('-------------')
             self._print('Commands List')
             self._print('-------------')
-            for command, doc in docs.iteritems():
+            for command, doc in docs.items():
                 self._print(command + ' - ' + doc)
 
     def emptyline(self):

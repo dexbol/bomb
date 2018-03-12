@@ -6,8 +6,8 @@ import os
 import tempfile
 import time
 import random
-from utils import normalize_path, filename
-from compiler import compile_csjs
+from .utils import normalize_path, filename
+from .compiler import compile_csjs
 try:
     from react import jsx
 except:
@@ -213,7 +213,7 @@ class CFile(object):
             fileext = os.path.splitext(path)[1]
             if fileext == '.js' and jsx:
                 with open(path) as handler:
-                    content = handler.read().decode('utf-8')
+                    content = handler.read()
                 if self._match_jsx_notation(content):
                     temp = tempfile.mkstemp(fileext)
                     self._tempfile.append(temp)
@@ -224,20 +224,19 @@ class CFile(object):
                 temp = tempfile.mkstemp('.css')
                 self._tempfile.append(temp)
                 with open(path) as handler:
-                    content = handler.read().decode('utf-8')
+                    content = handler.read()
                 content = compiler.compile_string(content)
                 os.write(temp[0], content.encode('utf-8'))
                 path = temp[1]
 
         return path
 
-
     def import_file(self, path):
         def _import(path):
             yield '\n'
             with open(path) as lines:
                 for line in lines:
-                    yield line.decode('utf-8')
+                    yield line
 
         if os.path.isdir(path):
             for (dirpath, dirnames, filenames) in os.walk(path):
@@ -292,9 +291,9 @@ class CFile(object):
         self.update_map()
 
         for line in self.parse_content():
-            content.append(line.encode('utf-8'))
+            content.append(line)
         for line in extension:
-            content.append(line.encode('utf-8'))
+            content.append(line)
 
         self._collect_garbage()
 
@@ -304,7 +303,7 @@ class CFile(object):
         content = self.dump(extension=extension)
         path = normalize_path(destination, self.get_version_name())
 
-        with open(path, 'w') as handler:
+        with open(path, 'w', encoding='utf-8') as handler:
             handler.write(''.join(content))
 
         return path
@@ -315,7 +314,7 @@ class CFile(object):
         referrer = normalize_path(referrer)
 
         with open(referrer) as handler:
-            content = handler.read().decode('utf-8')
+            content = handler.read()
 
         if self.placeholder:
             logger.info('replace placeholder: ' + self.filename)
@@ -323,17 +322,17 @@ class CFile(object):
             temp = tempfile.mkstemp('.' + self.extension, text=True)
             handle, abspath = temp
 
-            os.write(handle, spawn)
+            os.write(handle, spawn.encode('utf-8'))
 
-            spawn = compile_csjs(abspath)
+            spawn = compile_csjs(abspath).decode('utf-8')
             content = re.sub(pattern, '\g<1>' + spawn + '\g<3>', content)
             os.close(handle)
             os.remove(abspath)
         else:
             content = re.sub(pattern, self.get_version_name(), content)
 
-        with open(referrer, 'w') as handler:
-            handler.write(content.encode('utf-8'))
+        with open(referrer, 'w', encoding='utf-8') as handler:
+            handler.write(content)
 
     def _collect_garbage(self):
         for temp in self._tempfile:
@@ -350,7 +349,7 @@ class CFile(object):
 
     def _base36encode(self, number, 
                             alphabet='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
-        if not isinstance(number, (int, long)):
+        if not isinstance(number, int):
             raise TypeError('number must be an integer')
 
         base36 = ''
@@ -368,6 +367,3 @@ class CFile(object):
             base36 = alphabet[i] + base36
 
         return sign + base36
-
-
-

@@ -43,7 +43,7 @@ class TestConfig(unittest.TestCase):
 
     def test_get(self):
         prefix = self.config.get('prefix_path')
-        self.assertEqual(prefix['lib'], u'../../../lib/')
+        self.assertEqual(prefix['lib'], '../../../lib/')
 
     def test_set(self):
         self.config.set('name', 'dexbol')

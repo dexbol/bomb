@@ -42,7 +42,7 @@ class Batch():
         else:
             params = kwargs
 
-        for key, value in default_params.iteritems():
+        for key, value in default_params.items():
             params.setdefault(key, value)
 
         if not len(params['cfile']):

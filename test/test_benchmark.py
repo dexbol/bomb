@@ -11,4 +11,3 @@ class Benchmark(unittest.TestCase):
 
     def tearDown(self):
         pass
-

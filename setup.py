@@ -23,10 +23,9 @@ class my_install_scripts(install_scripts):
                 bat_path = os.path.join(self.install_dir, 'bomb.bat')
                 with open(bat_path, 'w') as handler:
                     handler.write(bat_str)
-                print ('Created: %s' % bat_path)
+                print(('Created: %s' % bat_path))
             except:
-                print ('ERROR: Unable to create %s: %s' % (bat_path, err))
-
+                print(('ERROR: Unable to create %s: %s' % (bat_path, err)))
 
 
 try:
