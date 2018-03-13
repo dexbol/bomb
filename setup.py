@@ -37,12 +37,12 @@ except:
 
 setup(
     name='bomb',
-    version='0.1.18',
+    version='1.0.0',
     description='Web frond-end publish tools',
     long_description=long_description,
     author='dexbol',
     author_email='dexbolg@gmail.com',
-    url='',
+    url='https://github.com/dexbol/bomb',
     packages=['bomb'],
     package_data={'bomb': ['jar/*.jar']},
     include_package_data=True,
