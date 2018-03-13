@@ -15,7 +15,7 @@ class SVNError(Exception):
         self.msg = msg
 
     def __str__(self):
-        return self.msg
+        return str(self.msg)
 
 
 def svn_command(command, args):
@@ -44,7 +44,7 @@ def svn_update(path):
 def svn_commit(path):
     try:
         for p in path:
-            status = svn_command('status', [p])
+            status = svn_command('status', [p]).decode('utf-8')
             if status and status[0] == '?':
                 svn_command('add', [p])
 

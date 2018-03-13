@@ -24,7 +24,7 @@ can locate java executale files and subversion comment-line tools. Read
 Install
 --------
 
-### Windows Installer ###
+### Windows Installer(Deprecated, only for old version) ###
 
 Download `setup.exe`. Run it, `Next` `Next` and `Next`. Congratulations!
 
