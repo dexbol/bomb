@@ -65,7 +65,7 @@ def svn_lock(path):
 def svn_unlock(path):
     try:
         status = svn_command('status', path)
-        if status.find('K') > -1:
+        if status.decode('utf-8').find('K') > -1:
             svn_command('unlock', path)
     except SVNError as e:
         logger.warn(e)
