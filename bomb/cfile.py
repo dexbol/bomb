@@ -234,7 +234,7 @@ class CFile(object):
     def import_file(self, path):
         def _import(path):
             yield '\n'
-            with open(path) as lines:
+            with open(path, 'r', encoding='utf-8') as lines:
                 for line in lines:
                     yield line
 
@@ -313,7 +313,7 @@ class CFile(object):
             self.get_version_name_re()
         referrer = normalize_path(referrer)
 
-        with open(referrer) as handler:
+        with open(referrer, 'r', encoding='utf-8') as handler:
             content = handler.read()
 
         if self.placeholder:
